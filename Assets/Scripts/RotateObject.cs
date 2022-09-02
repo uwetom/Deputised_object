@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RotateObject : MonoBehaviour
 {
@@ -8,22 +9,23 @@ public class RotateObject : MonoBehaviour
 
     private List<float> previousAngleDifferences; 
 
-    public Material stationaryMaterial;
-    public Material movingMaterial;
+
     public GameObject rotatingObject;
+
+    public Slider waitTimeSlider;
 
     private enum Mode {STATIONARY,MOVING,RESETTING,MENU};
     private Mode currentMode = Mode.MENU;
 
     private float previousTime = 0;
 
+    private float movingTime = 0;
+
     private float resetTime = 0;
 
-    private float lastTime = 0;
-
+    public float currentTransparency = 0;
 
     private Quaternion latestRotation = new Quaternion(0f,0f,0f,0f);
-
 
     // Start is called before the first frame update
     void Start()
@@ -31,8 +33,6 @@ public class RotateObject : MonoBehaviour
         previousAngleDifferences = new List<float>();
         previousRotations = new List<Quaternion>();
         previousRotations.Add(new Quaternion(0.0f,0.0f,0.0f,0.0f));
-
-        lastTime = Time.fixedDeltaTime;
     }
 
     public void Rotate(Quaternion newRotation){
@@ -50,29 +50,34 @@ public class RotateObject : MonoBehaviour
         if(previousAngleDifferences.Count >= 300){
             previousAngleDifferences.RemoveAt(0);
         }
-    
+
+        previousRotations.Add(latestRotation);
+
         //calulate average change of angle
 		float average = calculateAverageAngleChange();
+
+        Debug.Log(average);
 
         switch (currentMode){
             
             case Mode.MENU:
 
                 transform.localRotation = latestRotation;
-
+            
                 break;
             case Mode.STATIONARY:
 
                 //check if user has started to move the object
                 if(average > 0.01f){
                     currentMode = Mode.MOVING;
-                    rotatingObject.GetComponent<Renderer>().material = movingMaterial;
+                    movingTime = 0;
                 }
 
                 break;
 
             case Mode.MOVING:
 
+/*
                 //check if user has stopped moving the object
                 if(average <= 0.01f){
                     currentMode = Mode.RESETTING;
@@ -86,6 +91,23 @@ public class RotateObject : MonoBehaviour
                     transform.localRotation = previousRotations[0];
                     previousRotations.RemoveAt(0);
                     previousTime = 0;
+                }
+*/
+
+                //for testing
+                transform.localRotation = latestRotation;
+
+                //set transparency
+                if(movingTime < 10){
+                    currentTransparency = movingTime/10;
+                    
+                   // Debug.Log(currentTransparency);
+                
+                    setTransparency(currentTransparency);
+                 
+                    movingTime += Time.deltaTime;
+                }else{
+                       setTransparency(1);
                 }
 
                 break;
@@ -106,8 +128,7 @@ public class RotateObject : MonoBehaviour
                     resetTime = 0;
 
                     currentMode = Mode.STATIONARY;
-                    rotatingObject.GetComponent<Renderer>().material = stationaryMaterial;
-
+                   
                     Quaternion mostRecentRotation = previousRotations[previousRotations.Count-1];
                     
                     transform.localRotation = mostRecentRotation;
@@ -148,6 +169,21 @@ public class RotateObject : MonoBehaviour
             currentMode = Mode.MENU;
         }else{
             currentMode = Mode.STATIONARY;
+
+            setTransparency(0);
+
+        }
+   }
+
+   private void setTransparency(float t){
+
+        GameObject[] parts =  GameObject.FindGameObjectsWithTag("part");
+
+        foreach (GameObject part in parts)
+        {
+            Color color = part.GetComponent<MeshRenderer>().material.color ;
+            color.a = t;
+            part.GetComponent<MeshRenderer>().material.color = color ; 
         }
    }
 

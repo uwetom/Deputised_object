@@ -14,8 +14,10 @@ public class AccelerometerReciever : MonoBehaviour
 
     void Start()
     {
+        //recive quaternion rotation
         _receiver.Bind("/pos/", MessageReceived);   
 
+        // recieve euler rotation (for arduiono test, hopefully not needed)
         _receiver.Bind("/posEuler/", EulerMessageReceived);  
 
         Application.targetFrameRate = 30;
@@ -29,39 +31,26 @@ public class AccelerometerReciever : MonoBehaviour
         wRotVal = message.Values[3].FloatValue;
 
         Quaternion newRotation = new Quaternion(-xRotVal,-zRotVal,-yRotVal,wRotVal);
-
-
-        //rotationObject.GetComponent<RotateObject>().transform.localRotation= newRotation;
-
+        
         rotationObject.GetComponent<RotateObject>().Rotate(newRotation);
        
     }
 
     protected void EulerMessageReceived(OSCMessage message){
-        
-        Debug.Log(message.Values[1].FloatValue);
-
+    
         xRotVal = message.Values[0].FloatValue;
         yRotVal = message.Values[1].FloatValue;
         zRotVal = message.Values[2].FloatValue;
 
         Quaternion newRotation = Quaternion.Euler(xRotVal,yRotVal,zRotVal);
-        
-        //Quaternion newRotation = Quaternion.Euler(xRotVal,zRotVal,yRotVal);
-        //Quaternion newRotation = Quaternion.Euler(yRotVal,zRotVal,xRotVal);
-       // Quaternion newRotation = Quaternion.Euler(yRotVal,xRotVal,zRotVal);
-        //Quaternion newRotation = Quaternion.Euler(zRotVal,yRotVal,xRotVal);
-       // Quaternion newRotation = Quaternion.Euler(zRotVal,xRotVal,yRotVal);
-    
-        // Quaternion newRotation = Quaternion.Euler(yRotVal,0,0);
-       
-
 
         rotationObject.GetComponent<RotateObject>().Rotate(newRotation);
-       
 
     }
 
+    /**
+    * Press excape to quit the application
+    */
     void Update(){
         if(Input.GetKeyDown(KeyCode.Escape))
 		Application.Quit();
