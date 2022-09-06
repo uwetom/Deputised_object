@@ -9,9 +9,7 @@ public class RotateObject : MonoBehaviour
 
     private List<float> previousAngleDifferences;
 
-    public GameObject rotatingObject;
 
-    public int putDownTime = 3; //seconds the object is still before it is considered put down
     public Slider waitTimeSlider;
 
     private enum ObjectMode { INHAND, PUTDOWN }; //is the object being held or has it been put down
@@ -26,29 +24,36 @@ public class RotateObject : MonoBehaviour
 
     private float previousTime = 0;
 
-    private float movingTime = 0;
 
-    private float resetTime = 0;
 
     private float currentTransparency = 1;
     private float targetTransparency = 1;
 
-    public int fadeOutTime = 20;
-    public int fadeInTime = 60;
+    //public int fadeOutTime = 20;
+    public Slider FadeOutSlider;
+    //private int fadeInTime = 60;
+
+    public Slider FadeInSlider;
     private float transparencySpeed;
+
+    
+
 
     private Quaternion latestRotation = new Quaternion(0f, 0f, 0f, 0f);
 
     private Quaternion previousRotation = new Quaternion(0f, 0f, 0f, 0f);
+
+
+    public Slider LowestTransparencySlider;
 
     // Start is called before the first frame update
     void Start()
     {
         previousAngleDifferences = new List<float>();
         previousRotations = new List<Quaternion>();
-        previousRotations.Add(new Quaternion(0.0f, 0.0f, 0.0f, 0.0f));
+       
 
-        transparencySpeed = 1.0f / (fadeOutTime * 30.0f);
+        transparencySpeed = 1.0f / (FadeOutSlider.value * 30.0f);
     }
 
     public void Rotate(Quaternion newRotation)
@@ -58,8 +63,10 @@ public class RotateObject : MonoBehaviour
 
     void Update()
     {
+        
+        Debug.Log(previousRotations.Count);
 
-        if (currentFadeMode != FadeMode.NONE || currentMode == Mode.MENU)
+        if ( currentMode != Mode.DORMANT && currentMode != Mode.MENU)
         {
             previousRotations.Add(latestRotation);
 
@@ -112,7 +119,7 @@ public class RotateObject : MonoBehaviour
                 {
                     //object is current being held
                     currentMode = Mode.MOVING;
-                    movingTime = 0;
+                  
                 }
                 else if (currentObjectMode == ObjectMode.PUTDOWN)
                 {
@@ -133,8 +140,8 @@ public class RotateObject : MonoBehaviour
                 //animate transparency to 0
                 if (currentFadeMode != FadeMode.FADEOUT)
                 {
-                    targetTransparency = 0.1f;
-                    transparencySpeed = (float)(1.0f / (fadeOutTime * 30.0f));
+                    targetTransparency = LowestTransparencySlider.value;
+                    transparencySpeed = (float)(1.0f / (FadeOutSlider.value * 30.0f));
                     currentFadeMode = FadeMode.FADEOUT;
                 }
 
@@ -154,22 +161,13 @@ public class RotateObject : MonoBehaviour
                 }
 
 
-                //if just been picked from being put down for a long time
-                if (currentFadeMode == FadeMode.NONE)
-                {
-                    //reset 
-
-                    //  transform.localRotation = latestRotation;
-                    previousTime = 0;
-
-                }
-
+        
 
                 //fade the model in
                 if (currentFadeMode != FadeMode.FADEIN)
                 {
                     targetTransparency = 1;
-                    transparencySpeed = (float)(1.0f / (fadeInTime * 30.0f));
+                    transparencySpeed = (float)(1.0f / (FadeInSlider.value * 30.0f));
                     currentFadeMode = FadeMode.FADEIN;
                 }
 
@@ -192,12 +190,16 @@ public class RotateObject : MonoBehaviour
                 {
                     //object is current being held
                     currentMode = Mode.MOVING;
-                    movingTime = 0;
+
+                    previousTime = 0;
+                    
+                    previousRotations.Add(latestRotation);
+
                 }
+
+                 transform.localRotation = latestRotation;
                 
-
                 break;
-
         }
                 
 
@@ -214,7 +216,7 @@ public class RotateObject : MonoBehaviour
                 currentTransparency += transparencySpeed;
             }
 
-            setTransparency(currentTransparency);
+           
 
             //force current to be target if close
             if (Mathf.Abs(currentTransparency - targetTransparency) < (transparencySpeed * 2))
@@ -223,16 +225,19 @@ public class RotateObject : MonoBehaviour
                 currentFadeMode = FadeMode.NONE;
 
 
-                //reset previous rotations
-                previousRotations.Clear();
-                Debug.Log("reset list");
-
-                currentMode =  Mode.DORMANT;
-           
-
-
-
+                //if lowest transparency, clear previous rotations and set to dormant mode
+                if(currentTransparency == LowestTransparencySlider.value){
+                    
+                    previousRotations.Clear();
+                    Debug.Log("reset list");
+                   
+                    currentMode =  Mode.DORMANT;
+                }
             }
+
+             setTransparency(currentTransparency);
+
+
 
 
         }
@@ -273,7 +278,7 @@ public class RotateObject : MonoBehaviour
         else
         {
             currentMode = Mode.STATIONARY;
-            targetTransparency = 0.1f;
+            targetTransparency = LowestTransparencySlider.value;
         }
     }
 

@@ -10,9 +10,16 @@ public class SliderDisplay : MonoBehaviour
       [SerializeField]
     public TextMeshProUGUI TMPtext;
 
+    public bool Whole_Number = true;
+
     // Update is called once per frame
     void Update()
     {
-        TMPtext.text = slider.value.ToString("#");
+        if(Whole_Number){
+          TMPtext.text = slider.value.ToString("#");
+        }else{
+          TMPtext.text = slider.value.ToString("#.##");
+        }
+        
     }
 }
