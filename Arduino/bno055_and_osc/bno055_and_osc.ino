@@ -9,7 +9,7 @@
 
 
 /* Set the delay between fresh samples */
-#define BNO055_SAMPLERATE_DELAY_MS (100)
+#define BNO055_SAMPLERATE_DELAY_MS (20)
 
 // Check I2C device address and correct line below (by default address is 0x29 or 0x28)
 //                                   id, address
@@ -30,7 +30,7 @@ void displaySensorStatus(void);
 
 
 void setup(){
-  delay(500);
+  delay(200);
 
   Serial.begin(9600);
 
@@ -51,10 +51,10 @@ void setup(){
   delay(1000);
 
   /* Display some basic information on this sensor */
-  displaySensorDetails();
+ /* displaySensorDetails();*/
 
   /* Optional: Display current status */
-  displaySensorStatus();
+ /* displaySensorStatus();*/
 
   bno.setExtCrystalUse(true);
 
@@ -66,13 +66,12 @@ void setup(){
 
 void loop(){
  
-  sensors_event_t event;
-  bno.getEvent(&event);
 
   imu::Quaternion quat = bno.getQuat();
-      
-
-  OscWiFi.send("255.255.255.255", txPort, "/pos/", quat.x(),quat.y(),quat.z(),quat.w());
+  
+ 
+  
+  OscWiFi.send("255.255.255.255", txPort, "/pos/", float(-quat.x()),float(-quat.y()),float(quat.z()),float(quat.w()));
 
   OscWiFi.update();  // must be called to receive + send osc
    
@@ -114,7 +113,7 @@ void displaySensorDetails(void)
   Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" xxx");
   Serial.println("------------------------------------");
   Serial.println("");
-  delay(500);
+  delay(100);
 }
 
 
@@ -139,7 +138,7 @@ void displaySensorStatus(void)
   Serial.print("System Error:  0x");
   Serial.println(system_error, HEX);
   Serial.println("");
-  delay(500);
+  delay(100);
 }
 
 

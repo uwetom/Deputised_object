@@ -20,7 +20,7 @@ public class AccelerometerReciever : MonoBehaviour
         // recieve euler rotation (for arduiono test, hopefully not needed)
         _receiver.Bind("/posEuler/", EulerMessageReceived);  
 
-        Application.targetFrameRate = 30;
+        Application.targetFrameRate = 50;
     }
 
     protected void MessageReceived(OSCMessage message)
@@ -36,8 +36,8 @@ public class AccelerometerReciever : MonoBehaviour
        
     }
 
-    protected void EulerMessageReceived(OSCMessage message){
-    
+    protected void EulerMessageReceived(OSCMessage message)
+    {
         xRotVal = message.Values[0].FloatValue;
         yRotVal = message.Values[1].FloatValue;
         zRotVal = message.Values[2].FloatValue;
@@ -45,7 +45,6 @@ public class AccelerometerReciever : MonoBehaviour
         Quaternion newRotation = Quaternion.Euler(xRotVal,yRotVal,zRotVal);
 
         rotationObject.GetComponent<RotateObject>().Rotate(newRotation);
-
     }
 
     /**

@@ -64,7 +64,7 @@ public class RotateObject : MonoBehaviour
     void Update()
     {
         
-        Debug.Log(previousRotations.Count);
+        //Debug.Log(previousRotations.Count);
 
         if ( currentMode != Mode.DORMANT && currentMode != Mode.MENU)
         {
@@ -78,10 +78,13 @@ public class RotateObject : MonoBehaviour
         }
 
 
-        float angle = Quaternion.Angle(previousRotation, latestRotation);
+        float angle = Quaternion.Angle(Quaternion.Normalize(previousRotation), Quaternion.Normalize(latestRotation));
+
         previousRotation = latestRotation;
 
         previousAngleDifferences.Add(angle);
+       
+        
 
         if (previousAngleDifferences.Count >= (Application.targetFrameRate * waitTimeSlider.value))
         {
@@ -94,6 +97,8 @@ public class RotateObject : MonoBehaviour
 
         //calulate average change of angle
         float average = calculateAverageAngleChange();
+
+        //Debug.Log(average);
 
         //determine if object is beign held or put down
 
