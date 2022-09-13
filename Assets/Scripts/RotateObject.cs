@@ -9,7 +9,6 @@ public class RotateObject : MonoBehaviour
 
     private List<float> previousAngleDifferences;
 
-
     public Slider waitTimeSlider;
 
     private enum ObjectMode { INHAND, PUTDOWN }; //is the object being held or has it been put down
@@ -23,8 +22,6 @@ public class RotateObject : MonoBehaviour
     private FadeMode currentFadeMode = FadeMode.NONE;
 
     private float previousTime = 0;
-
-
 
     private float currentTransparency = 1;
     private float targetTransparency = 1;
@@ -46,13 +43,14 @@ public class RotateObject : MonoBehaviour
 
     public Slider LowestTransparencySlider;
 
+    public Toggle mouse_toggle;
+
     // Start is called before the first frame update
     void Start()
     {
         previousAngleDifferences = new List<float>();
         previousRotations = new List<Quaternion>();
        
-
         transparencySpeed = 1.0f / (FadeOutSlider.value * 30.0f);
     }
 
@@ -64,6 +62,10 @@ public class RotateObject : MonoBehaviour
     void Update()
     {
         
+        if(mouse_toggle.isOn){
+            CheckMousePosition();
+        }
+
         //Debug.Log(previousRotations.Count);
 
         if ( currentMode != Mode.DORMANT && currentMode != Mode.MENU)
@@ -302,6 +304,30 @@ public class RotateObject : MonoBehaviour
             part.GetComponent<MeshRenderer>().material.color = color;
         }
     }
+
+
+
+    private void CheckMousePosition()
+    {   
+       
+        float mouseX = -Input.GetAxis("Mouse X") * 3;
+        float mouseY = Input.GetAxis("Mouse Y") * 3;
+
+        float wheel = Input.mouseScrollDelta.y * 3;
+
+     
+        Vector3 euler_angles = latestRotation.eulerAngles;
+        euler_angles.x += mouseX;
+        euler_angles.y += mouseY;
+        euler_angles.z += wheel;
+
+        latestRotation.eulerAngles = euler_angles;
+
+        Debug.Log(euler_angles.x);
+
+
+    }
+
 
 
 
