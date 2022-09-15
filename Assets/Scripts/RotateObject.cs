@@ -310,20 +310,78 @@ public class RotateObject : MonoBehaviour
     private void CheckMousePosition()
     {   
        
-        float mouseX = -Input.GetAxis("Mouse X") * 3;
-        float mouseY = Input.GetAxis("Mouse Y") * 3;
+        float wheel = -Input.GetAxis("Mouse X")* 3;
+        float mouseX = Input.GetAxis("Mouse Y");
+        float mouseY = -Input.mouseScrollDelta.y;
 
-        float wheel = Input.mouseScrollDelta.y * 3;
-
+        //Vector3 DirectionChange = new Quat(mouseX,mouseY,wheel);
      
-        Vector3 euler_angles = latestRotation.eulerAngles;
+        //latestRotation = latestRotation * DirectionChange;
+
+      //  Quaternion q = new Quaternion();
+       // q.eulerAngles = new Vector3(mouseX,mouseY,wheel);
+
+       // latestRotation *= q;
+
+
+////Quaternion q = new Quaternion();
+//q.Euler(mouseX,mouseY,wheel);
+
+///latestRotation = latestRotation * q;
+
+       // Vector3 euler_angles = latestRotation.eulerAngles;
+        //euler_angles.x += mouseX;
+       // euler_angles.y += mouseY;
+       // euler_angles.z += wheel;
+
+      //  latestRotation.eulerAngles = euler_angles;
+
+
+      //  Vector3 euler_angles = latestRotation.eulerAngles;
+      //  euler_angles.x += mouseX;
+      //  euler_angles.y += mouseY;
+       // euler_angles.z += wheel;
+
+       // latestRotation.eulerAngles = euler_angles;
+
+        //latestRotation.
+
+         Vector3 euler_angles = latestRotation.eulerAngles;
         euler_angles.x += mouseX;
         euler_angles.y += mouseY;
         euler_angles.z += wheel;
 
         latestRotation.eulerAngles = euler_angles;
 
-        Debug.Log(euler_angles.x);
+
+        //latestRotation.eulerAngles();
+        
+        
+     //  latestRotation = Quaternion.Euler(latestRotation.eulerAngles.x + 1, latestRotation.eulerAngles.y, latestRotation.eulerAngles.z);
+
+       // latestRotation *= Quaternion.AngleAxis(5, Vector3.forward);
+
+        //q.eulerAngles = euler_angles;
+
+        //latestRotation *= q;
+
+      // = latestRotation * Quaternion.Euler(mouseX,mouseY,wheel);
+
+      // Debug.Log(euler_angles.x);
+
+
+       //  Quaternion oldTransform = transform.Rotation;
+
+ 
+      //  Quaternion YawRotationQuaternion = new Quaternion(0, 1, 0, mouseY);
+      //  Quaternion PitchRotationQuaternion = new Quaternion( 1, 0, 0, mouseX);
+      //  Quaternion rollRotationQuaternion = new Quaternion( 0, 0, 1, wheel);
+    
+
+
+     //  latestRotation = PitchRotationQuaternion * latestRotation * YawRotationQuaternion * rollRotationQuaternion;
+        
+
 
 
     }
