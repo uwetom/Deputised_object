@@ -7,15 +7,14 @@
 #include <utility/imumaths.h>
 
 
-
 /* Set the delay between fresh samples */
-#define BNO055_SAMPLERATE_DELAY_MS (20)
+#define BNO055_SAMPLERATE_DELAY_MS (15)
+
+float currenttime;
 
 // Check I2C device address and correct line below (by default address is 0x29 or 0x28)
 //                                   id, address
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
-
-
 
 
 const char* ssid     = "Deputised Object";
@@ -25,19 +24,19 @@ const int   rxPort   = 9000;
 const int   txPort   = 7000;
 int uptime = 0;
 
+float delayTime = 0;
+
 void displaySensorDetails(void);
 void displaySensorStatus(void);
 
 
+
 void setup(){
   delay(200);
-
   Serial.begin(9600);
-
   Serial.println("setup");
-   
   Serial.println("Orientation Sensor Test");
-  
+
   Serial.println("");
 
   /* Initialise the sensor */
@@ -62,6 +61,11 @@ void setup(){
   Serial.println("sensor setup complete!\n");
 
   setupWIFI();
+
+
+  currenttime = millis();
+
+  
 }
 
 void loop(){
@@ -75,10 +79,22 @@ void loop(){
 
   OscWiFi.update();  // must be called to receive + send osc
    
-  delay(BNO055_SAMPLERATE_DELAY_MS);
-  
-}
+  //delay(BNO055_SAMPLERATE_DELAY_MS);
 
+  float timeTaken = millis() - currenttime;
+
+  if(timeTaken < BNO055_SAMPLERATE_DELAY_MS){
+    delayTime = BNO055_SAMPLERATE_DELAY_MS - timeTaken;
+
+    if(delayTime >0){
+      delay(delayTime);
+    }
+  }
+
+  //Serial.println(delayTime + timeTaken);
+  
+  currenttime = millis();
+}
 
 void setupWIFI(){
      // create and broadcast access point ssid
@@ -90,9 +106,7 @@ void setupWIFI(){
         delay(500);
         Serial.print(".");
     }
-
 }
-
 
 /**************************************************************************/
 /*
