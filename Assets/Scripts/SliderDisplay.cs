@@ -18,7 +18,7 @@ public class SliderDisplay : MonoBehaviour
         if(Whole_Number){
           TMPtext.text = slider.value.ToString("#");
         }else{
-          TMPtext.text = slider.value.ToString("#.##");
+          TMPtext.text = slider.value.ToString("#.###");
         }
         
     }
