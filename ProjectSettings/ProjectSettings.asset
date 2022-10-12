@@ -702,20 +702,20 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    Android: EXTOSC
-    CloudRendering: EXTOSC
-    EmbeddedLinux: EXTOSC
-    GameCoreXboxOne: EXTOSC
-    Lumin: EXTOSC
-    Nintendo Switch: EXTOSC
-    PS4: EXTOSC
-    PS5: EXTOSC
-    Stadia: EXTOSC
-    Standalone: EXTOSC
-    WebGL: EXTOSC
-    Windows Store Apps: EXTOSC
-    XboxOne: EXTOSC
-    tvOS: EXTOSC
+    Android: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    CloudRendering: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    EmbeddedLinux: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    GameCoreXboxOne: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    Lumin: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    Nintendo Switch: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    PS4: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    PS5: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    Stadia: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    Standalone: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    WebGL: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    Windows Store Apps: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    XboxOne: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
+    tvOS: EXTOSC;UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
