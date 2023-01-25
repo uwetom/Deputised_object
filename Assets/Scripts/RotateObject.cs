@@ -233,7 +233,10 @@ public class RotateObject : MonoBehaviour
 
                 }
 
-                SetSmoothedRotation(previousRotations[0]);
+                if (previousRotations.Count > 0)
+                {
+                    SetSmoothedRotation(previousRotations[0]);
+                }
 
                // transform.localRotation = latestRotation;
 
