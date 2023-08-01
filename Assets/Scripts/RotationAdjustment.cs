@@ -7,7 +7,9 @@ using UnityEngine.UI;
 public class RotationAdjustment : MonoBehaviour
 {
    
-    public Slider slider;
+    public Slider sliderX;
+    public Slider sliderY;
+    public Slider sliderZ;
     public GameObject canvas;
     public GameObject rotatingObject;
 
@@ -38,7 +40,7 @@ public class RotationAdjustment : MonoBehaviour
 
 
         if(UIVisible){
-            transform.rotation = Quaternion.Euler(0.0f,slider.value, 0.0f);
+            transform.rotation = Quaternion.Euler(sliderX.value, sliderY.value, sliderZ.value);
         }
 
     }
