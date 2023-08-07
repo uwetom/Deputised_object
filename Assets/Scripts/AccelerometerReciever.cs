@@ -14,6 +14,7 @@ public class AccelerometerReciever : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("listening for osc messages");
         //recive quaternion rotation
         _receiver.Bind("/pos/", MessageReceived);   
 
@@ -25,6 +26,8 @@ public class AccelerometerReciever : MonoBehaviour
 
     protected void MessageReceived(OSCMessage message)
     {
+
+        
         xRotVal = message.Values[0].FloatValue;
         yRotVal = message.Values[1].FloatValue;
         zRotVal = message.Values[2].FloatValue;

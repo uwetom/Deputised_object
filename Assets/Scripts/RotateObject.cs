@@ -5,14 +5,13 @@ using UnityEngine.UI;
 
 public class RotateObject : MonoBehaviour
 {
-    private List<Quaternion> previousRotations;
 
+    
+    private List<Quaternion> previousRotations; // list of rotations from device, used in delay mode
     private List<float> previousAngleDifferences;
-
-    public Slider waitTimeSlider;
-
     private enum ObjectMode { INHAND, PUTDOWN }; //is the object being held or has it been put down
     private ObjectMode currentObjectMode = ObjectMode.PUTDOWN;
+
 
     private enum Mode { STATIONARY, MOVING, DORMANT, MENU };
 
@@ -26,23 +25,23 @@ public class RotateObject : MonoBehaviour
     private float currentTransparency = 1;
     private float targetTransparency = 1;
 
-    //public int fadeOutTime = 20;
+    private int frameCount = 0;
+
+    // reference to sliders on settings canvas
+    public Slider waitTimeSlider;
     public Slider FadeOutSlider;
-    //private int fadeInTime = 60;
-
     public Slider FadeInSlider;
-    private float transparencySpeed;
-
-    private Quaternion latestRotation = new Quaternion(0f, 0f, 0f, 0f);
-
-    private Quaternion previousRotation = new Quaternion(0f, 0f, 0f, 0f);
-
     public Slider LowestTransparencySlider;
     public Slider SmoothingSlider;
-
+    public Slider delaySlider;
     public Toggle mouse_toggle;
-
     public Toggle delay_toggle;
+
+
+
+    private float transparencySpeed;
+    private Quaternion latestRotation = new Quaternion(0f, 0f, 0f, 0f);
+    private Quaternion previousRotation = new Quaternion(0f, 0f, 0f, 0f);
 
     private int averageFactor = 5; // how many values to take to average out to stop jitter.
 
@@ -62,6 +61,8 @@ public class RotateObject : MonoBehaviour
 
     void Update()
     {
+
+        frameCount++;
 
         if (mouse_toggle.isOn)
         {
@@ -152,9 +153,17 @@ public class RotateObject : MonoBehaviour
 
                     if(delay_toggle.isOn){
                         //play back at half speed
-                        previousTime += Time.deltaTime;
 
-                        if (previousTime > (Time.deltaTime * 2))
+                        if ((frameCount % (52 - delaySlider.value)) != 0)
+                      
+                        {
+                            SetSmoothedRotation(previousRotations[0]);
+                            previousRotations.RemoveAt(0);
+                        }
+
+
+                        /*
+                        if (previousTime >= (Time.deltaTime * delaySlider.value))
                         {
                         
                         
@@ -162,8 +171,15 @@ public class RotateObject : MonoBehaviour
                             SetSmoothedRotation(previousRotations[0]);
 
                             previousRotations.RemoveAt(0);
-                            previousTime = 0;
+                            previousTime = previousTime - (Time.deltaTime * delaySlider.value);
                         }
+                        else
+                        {
+                            previousTime += Time.deltaTime;
+                        }
+                        */
+
+
                     }else{
                           SetSmoothedRotation(latestRotation);
                     }
@@ -203,10 +219,20 @@ public class RotateObject : MonoBehaviour
                 }
 
                  if(delay_toggle.isOn){
-                //play back at half speed
+                    //play back at half speed
+
+
+                    if ((frameCount % (52 - delaySlider.value)) != 0)
+                    {
+                        SetSmoothedRotation(previousRotations[0]);
+                        previousRotations.RemoveAt(0);
+                    }
+
+
+                    /*
                     previousTime += Time.deltaTime;
 
-                    if (previousTime >= (Time.deltaTime * 1.2))
+                    if (previousTime >= (Time.deltaTime * delaySlider.value))
                     {
                     // transform.localRotation = previousRotations[0];
                         SetSmoothedRotation(previousRotations[0]);
@@ -214,7 +240,11 @@ public class RotateObject : MonoBehaviour
                         previousRotations.RemoveAt(0);
                         previousTime = 0;
                     }
-                 }else{
+                    */
+
+
+                }
+                else{
                        SetSmoothedRotation(latestRotation);
                  }
 
@@ -312,6 +342,7 @@ public class RotateObject : MonoBehaviour
         {
             currentMode = Mode.MENU;
             targetTransparency = 1;
+            previousRotations.Clear();
         }
         else
         {
