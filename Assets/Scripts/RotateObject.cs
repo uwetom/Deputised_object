@@ -35,7 +35,7 @@ public class RotateObject : MonoBehaviour
     public Slider SmoothingSlider;
     public Slider delaySlider;
     public Toggle mouse_toggle;
-    public Toggle delay_toggle;
+   // public Toggle delay_toggle;
 
 
 
@@ -151,10 +151,11 @@ public class RotateObject : MonoBehaviour
                    
                     //object is currently not being held
 
-                    if(delay_toggle.isOn){
+                    if(delaySlider.value > 0)
+                    {
                         //play back at half speed
 
-                        if ((frameCount % (52 - delaySlider.value)) != 0)
+                        if ((frameCount % ((delaySlider.maxValue + 2) - delaySlider.value)) != 0)
                       
                         {
                             SetSmoothedRotation(previousRotations[0]);
@@ -218,11 +219,11 @@ public class RotateObject : MonoBehaviour
                     currentFadeMode = FadeMode.FADEIN;
                 }
 
-                 if(delay_toggle.isOn){
+                if (delaySlider.value > 0) { 
                     //play back at half speed
 
 
-                    if ((frameCount % (52 - delaySlider.value)) != 0)
+                    if ((frameCount % ((delaySlider.maxValue + 2) - delaySlider.value)) != 0)
                     {
                         SetSmoothedRotation(previousRotations[0]);
                         previousRotations.RemoveAt(0);
