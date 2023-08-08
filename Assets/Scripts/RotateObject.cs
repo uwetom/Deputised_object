@@ -5,18 +5,12 @@ using UnityEngine.UI;
 
 public class RotateObject : MonoBehaviour
 {
-
-    
     private List<Quaternion> previousRotations; // list of rotations from device, used in delay mode
     private List<float> previousAngleDifferences;
     private enum ObjectMode { INHAND, PUTDOWN }; //is the object being held or has it been put down
-    private ObjectMode currentObjectMode = ObjectMode.PUTDOWN;
-
-
-    private enum Mode { STATIONARY, MOVING, DORMANT, MENU };
-
+    private ObjectMode currentObjectMode = ObjectMode.PUTDOWN; 
+    private enum Mode { STATIONARY, MOVING, DORMANT, MENU }; // secondary state of the object
     private Mode currentMode = Mode.MENU;
-
     private enum FadeMode { FADEIN, FADEOUT, NONE };
     private FadeMode currentFadeMode = FadeMode.NONE;
 
@@ -27,6 +21,13 @@ public class RotateObject : MonoBehaviour
 
     private int frameCount = 0;
 
+    private float transparencySpeed;
+    private Quaternion latestRotation = new Quaternion(0f, 0f, 0f, 0f);
+    private Quaternion previousRotation = new Quaternion(0f, 0f, 0f, 0f);
+
+    private int averageFactor = 5; // how many values to take to average out to stop jitter.
+
+
     // reference to sliders on settings canvas
     public Slider waitTimeSlider;
     public Slider FadeOutSlider;
@@ -35,16 +36,8 @@ public class RotateObject : MonoBehaviour
     public Slider SmoothingSlider;
     public Slider delaySlider;
     public Toggle mouse_toggle;
-   // public Toggle delay_toggle;
-
-
-
-    private float transparencySpeed;
-    private Quaternion latestRotation = new Quaternion(0f, 0f, 0f, 0f);
-    private Quaternion previousRotation = new Quaternion(0f, 0f, 0f, 0f);
-
-    private int averageFactor = 5; // how many values to take to average out to stop jitter.
-
+   
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -69,36 +62,24 @@ public class RotateObject : MonoBehaviour
             CheckMousePosition();
         }
 
-        //Debug.Log(previousRotations.Count);
-
         if (currentMode != Mode.DORMANT && currentMode != Mode.MENU)
         {
             previousRotations.Add(latestRotation);
 
-        //maximum of 15 minutes remebered movement
+            //maximum of 15 minutes remebered movement
             if (previousRotations.Count >= (Application.targetFrameRate * (60 * 15)))
             {
                 Debug.Log("PROBLEM - need to stop remembering rotations after a certain period");
+                // current solution delete a record.
+                previousRotations.RemoveAt(0);
             }
-
-/*
-            if (currentMode == Mode.DORMANT || currentMode == Mode.MENU)
-            {
-                if(previousRotations.Count > averageFactor){
-                    previousRotations.RemoveRange(0,(previousRotations.Count - averageFactor));
-                }
-            }
-            */
         }
-
-        
-
+                
         float angle = Quaternion.Angle(Quaternion.Normalize(previousRotation), Quaternion.Normalize(latestRotation));
 
         previousRotation = latestRotation;
 
         previousAngleDifferences.Add(angle);
-
 
         if (previousAngleDifferences.Count >= (Application.targetFrameRate * waitTimeSlider.value))
         {
@@ -107,13 +88,7 @@ public class RotateObject : MonoBehaviour
 
         //calulate average change of angle
         float average = calculateAverageAngleChange();
-
-        //Debug.Log(average);
-
-        //determine if object is beign held or put down
-
-        // if(currentObjectMode == ObjectMode.PUTDOWN)
-        //private ObjectMode currentObjectMode = ObjectMode.PUTDOWN;
+               
         if (average > 0.01f)
         {
             currentObjectMode = ObjectMode.INHAND;
@@ -126,16 +101,8 @@ public class RotateObject : MonoBehaviour
         switch (currentMode)
         {
             case Mode.MENU:
-
-
-               // Quaternion currentR = transform.localRotation;
-
-               // Quaternion targetR = latestRotation;
-               
-
-               // transform.localRotation = Quaternion.Lerp(currentR, targetR, SmoothingSlider.value); 
+                               
                 SetSmoothedRotation(latestRotation);
-
 
                 break;
             case Mode.STATIONARY:
@@ -144,13 +111,11 @@ public class RotateObject : MonoBehaviour
                 {
                     //object is current being held
                     currentMode = Mode.MOVING;
-
                 }
                 else if (currentObjectMode == ObjectMode.PUTDOWN)
                 {
-                   
-                    //object is currently not being held
-
+               
+                    // Delay playback
                     if(delaySlider.value > 0)
                     {
                         //play back at half speed
@@ -162,29 +127,9 @@ public class RotateObject : MonoBehaviour
                             previousRotations.RemoveAt(0);
                         }
 
-
-                        /*
-                        if (previousTime >= (Time.deltaTime * delaySlider.value))
-                        {
-                        
-                        
-                            //transform.localRotation = previousRotations[0];
-                            SetSmoothedRotation(previousRotations[0]);
-
-                            previousRotations.RemoveAt(0);
-                            previousTime = previousTime - (Time.deltaTime * delaySlider.value);
-                        }
-                        else
-                        {
-                            previousTime += Time.deltaTime;
-                        }
-                        */
-
-
                     }else{
                           SetSmoothedRotation(latestRotation);
                     }
-
                 }
 
                 //animate transparency to 0
@@ -210,7 +155,6 @@ public class RotateObject : MonoBehaviour
                     currentMode = Mode.STATIONARY;
                 }
 
-
                 //fade the model in
                 if (currentFadeMode != FadeMode.FADEIN)
                 {
@@ -219,36 +163,18 @@ public class RotateObject : MonoBehaviour
                     currentFadeMode = FadeMode.FADEIN;
                 }
 
+                // delay playback
                 if (delaySlider.value > 0) { 
-                    //play back at half speed
-
-
+                   
                     if ((frameCount % ((delaySlider.maxValue + 2) - delaySlider.value)) != 0)
                     {
                         SetSmoothedRotation(previousRotations[0]);
                         previousRotations.RemoveAt(0);
                     }
-
-
-                    /*
-                    previousTime += Time.deltaTime;
-
-                    if (previousTime >= (Time.deltaTime * delaySlider.value))
-                    {
-                    // transform.localRotation = previousRotations[0];
-                        SetSmoothedRotation(previousRotations[0]);
-
-                        previousRotations.RemoveAt(0);
-                        previousTime = 0;
-                    }
-                    */
-
-
                 }
                 else{
                        SetSmoothedRotation(latestRotation);
-                 }
-
+                }
 
                 break;
             case Mode.DORMANT:
@@ -257,11 +183,8 @@ public class RotateObject : MonoBehaviour
                 {
                     //object is current being held
                     currentMode = Mode.MOVING;
-
                     previousTime = 0;
-
                     previousRotations.Add(latestRotation);
-
                 }
 
                 if (previousRotations.Count > 0)
@@ -269,17 +192,12 @@ public class RotateObject : MonoBehaviour
                     SetSmoothedRotation(previousRotations[0]);
                 }
 
-               // transform.localRotation = latestRotation;
-
-
                 break;
-        
+      
         }
-
 
         if (currentTransparency != targetTransparency)
         {
-
             // Debug.Log(transparencySpeed);
             if (currentTransparency > targetTransparency)
             {
@@ -290,18 +208,15 @@ public class RotateObject : MonoBehaviour
                 currentTransparency += transparencySpeed;
             }
 
-
             //force current to be target if close
             if (Mathf.Abs(currentTransparency - targetTransparency) < (transparencySpeed * 2))
             {
                 currentTransparency = targetTransparency;
                 currentFadeMode = FadeMode.NONE;
 
-
                 //if lowest transparency, clear previous rotations and set to dormant mode
                 if (currentTransparency == LowestTransparencySlider.value)
                 {
-
                     previousRotations.Clear();
                     Debug.Log("reset list");
 
@@ -370,7 +285,6 @@ public class RotateObject : MonoBehaviour
 
     private void CheckMousePosition()
     {
-
         float wheel = -Input.GetAxis("Mouse X") * 3;
         float mouseX = Input.GetAxis("Mouse Y");
         float mouseY = -Input.mouseScrollDelta.y * 3;
@@ -384,81 +298,10 @@ public class RotateObject : MonoBehaviour
 
     }
 
-
-/*
-    private Quaternion AverageQuaternion(){
-
-        
-        if(previousRotations.Count < averageFactor){
-
-            Debug.Log("too small");
-            return previousRotations[0];
-
-        }    
-
-        //Global variable which holds the amount of rotations which
-        //need to be averaged.
-        int addAmount = averageFactor;
-        
-        //Global variable which represents the additive quaternion
-        Quaternion addedRotation = Quaternion.identity;
-        
-        //The averaged rotational value
-        Quaternion averageRotation = new Quaternion(0,0,0,0);
-        
-        //multipleRotations is an array which holds all the quaternions
-        //which need to be averaged.
-       // Quaternion[] multipleRotations new Quaternion[totalAmount];
-        
-        //Loop through all the rotational values.
-        for (int i = 0; i < averageFactor; i++)
-        {
-            
-            Quaternion singleRotation = previousRotations[i];
-            //Temporary values
-            float w;
-            float x;
-            float y;
-            float z;
-        
-            //Amount of separate rotational values so far
-            addAmount++;
-        
-            float addDet = 1.0f / (float)addAmount;
-            addedRotation.w += singleRotation.w;
-            w = addedRotation.w * addDet;
-            addedRotation.x += singleRotation.x;
-            x = addedRotation.x * addDet;
-            addedRotation.y += singleRotation.y;
-            y = addedRotation.y * addDet;
-            addedRotation.z += singleRotation.z;
-            z = addedRotation.z * addDet;
-        
-            //Normalize. Note: experiment to see whether you
-            //can skip this step.
-            float D = 1.0f / (w*w + x*x + y*y + z*z);
-            w *= D;
-            x *= D;
-            y *= D;
-            z *= D;
-        
-            //The result is valid right away, without
-            //first going through the entire array.
-            averageRotation = new Quaternion(x, y, z, w);
-        }
-
-
-        return averageRotation;
-
-    }
-
-    */
-
     private void SetSmoothedRotation(Quaternion targetRotation){
 
         Quaternion currentR = transform.localRotation;
         transform.localRotation = Quaternion.Lerp(currentR, targetRotation, SmoothingSlider.value); 
-
-
     }
+
 }
