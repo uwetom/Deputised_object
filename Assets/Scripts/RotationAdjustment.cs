@@ -12,22 +12,44 @@ public class RotationAdjustment : MonoBehaviour
     public Slider sliderZ;
     public GameObject canvas;
     public GameObject rotatingObject;
+    public bool mirrorMode = false;
 
-   private bool UIVisible = true;
+    private bool UIVisible = true;
 
     // Start is called before the first frame update
     void Start()
     {
         canvas.SetActive(UIVisible);
 
+        /*
+        if (mirrorMode)
+        {
+            transform.localScale = new Vector3(-1, -1, 1);
+        }
+        else
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        */
        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        if(Input.GetKeyDown(KeyCode.Mouse0)){
+        /*
+
+        if (mirrorMode)
+        {
+            transform.localScale = new Vector3(-1, -1, 1);
+        }
+        else
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        */
+
+        if (Input.GetKeyDown(KeyCode.Mouse0)){
 
             //show ui
             canvas.SetActive(true);
