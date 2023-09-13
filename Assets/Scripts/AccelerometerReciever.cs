@@ -29,11 +29,11 @@ public class AccelerometerReciever : MonoBehaviour
 
         
         xRotVal = message.Values[0].FloatValue;
-        yRotVal = message.Values[1].FloatValue;
-        zRotVal = message.Values[2].FloatValue;
+        zRotVal = message.Values[1].FloatValue;
+        yRotVal = message.Values[2].FloatValue;
         wRotVal = message.Values[3].FloatValue;
 
-        Quaternion newRotation = new Quaternion(-xRotVal,-zRotVal,-yRotVal,wRotVal);
+        Quaternion newRotation = new Quaternion(-xRotVal,-yRotVal,-zRotVal,wRotVal);
         
         rotationObject.GetComponent<RotateObject>().Rotate(newRotation);
        

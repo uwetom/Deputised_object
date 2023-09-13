@@ -49,8 +49,13 @@ public class RotateObject : MonoBehaviour
 
     public void Rotate(Quaternion newRotation)
     {
+
+
+
         latestRotation = newRotation;
     }
+
+
 
     void Update()
     {
